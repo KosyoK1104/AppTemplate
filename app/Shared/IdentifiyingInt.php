@@ -6,25 +6,25 @@ namespace App\Shared;
 
 use InvalidArgumentException;
 
-class AbstractString
+class IdentifiyingInt
 {
     public function __construct(
-        public readonly string $value
+        public readonly int $value
     ) {
         $this->guard($value);
     }
 
-    public static function make(string $value) : self
+    public static function make(int $value) : self
     {
         return new self($value);
     }
 
-    public static function isValid(mixed $value) : bool
+    public static function isValid(int $value) : bool
     {
-        return is_string($value);
+        return true;
     }
 
-    private function guard(string $value) : void
+    private function guard(int $value) : void
     {
         if (!self::isValid($value)) {
             throw new InvalidArgumentException('asd');

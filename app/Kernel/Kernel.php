@@ -12,6 +12,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Throwable;
 
 final class Kernel
 {
@@ -87,7 +88,7 @@ final class Kernel
                 ->withHeader('Content-type', 'application/json')
             ;
         }
-        catch (\Throwable $e){
+        catch (Throwable $e){
             self::$response
                 ->withStatus(500)
                 ->withBody(
