@@ -112,7 +112,7 @@ final class Database
      * @param array $binds
      * @return array|false
      */
-    public function row(string $query, array $binds = [],) : array|false
+    public function row(string $query, array $binds = []) : array|false
     {
         $this->run($query, $binds);
         $result = $this->stmt->fetch($this->fetchMode);

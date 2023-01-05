@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Shared\Helpers;
 
 use JsonSerializable;
-use Traversable;
 
 final class ObjectToArrayTransformer
 {

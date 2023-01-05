@@ -31,7 +31,7 @@ final class RouterServiceProvider extends AbstractServiceProvider
             try {
                 $router->middleware($container->get(DatabaseMiddleware::class));
             }
-            catch (Throwable $e) {
+            catch (Throwable) {
                 // do nothing
             }
             return $router;

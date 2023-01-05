@@ -2,12 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Clients\ClientsServiceProvider;
-use App\Kernel\Http\Response\Response\Response\HtmlController;
-use App\Kernel\Http\Response\Response\Response\HtmlResponseFactory;
-use App\Kernel\Http\Response\Response\Response\Request;
-use App\Kernel\Http\Response\Response\Response\RestController;
-use App\Kernel\Http\Response\Response\Response\RestResponseFactory;
+use App\Kernel\Http\Controllers\HtmlController;
+use App\Kernel\Http\Controllers\RestController;
+use App\Kernel\Http\Response\HtmlResponseFactory;
+use App\Kernel\Http\Response\RestResponseFactory;
 use App\ServiceProviders\ConfigurationServiceProvider;
 use App\ServiceProviders\DatabaseServiceProvider;
 use App\ServiceProviders\HttpServiceProvider;

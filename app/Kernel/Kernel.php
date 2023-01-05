@@ -8,7 +8,9 @@ use App\Kernel\Exceptions\AppException;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Http\Exception as HttpException;
 use League\Route\Router;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -21,6 +23,10 @@ final class Kernel
     private static ResponseInterface $response;
     private static StreamFactoryInterface $streamFactory;
 
+    /**
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     private function __construct()
     {
         self::$response = self::$container->get(ResponseInterface::class);
@@ -49,66 +55,43 @@ final class Kernel
             self::$response = $router->dispatch(Kernel::$serverRequest);
         }
         catch (HttpException $e) {
-            self::$response = self::$response
-                ->withStatus($e->getStatusCode())
-                ->withBody(
-                    self::$streamFactory
-                        ->createStream(
-                            json_encode(
-                                [
-                                    'error' => [
-                                        'reason' => $e->getMessage(),
-                                        'code'   => $e->getStatusCode(),
-                                    ],
-                                    'code'  => $e->getStatusCode(),
-                                ]
-                            )
-                        )
-                )
-                ->withHeader('Content-type', 'application/json')
-            ;
+            self::$response = $this->getWithHeader($e->getStatusCode(), $e->getStatusCode(), $e->getMessage());
         }
         catch (AppException $e) {
-            self::$response = self::$response
-                ->withStatus($e->getCode())
-                ->withBody(
-                    self::$streamFactory
-                        ->createStream(
-                            json_encode(
-                                [
-                                    'error' => [
-                                        'reason' => $e->getMessage(),
-                                        'code'   => $e->getCode(),
-                                    ],
-                                    'code'  => $e->getCode(),
-                                ]
-                            )
-                        )
-                )
-                ->withHeader('Content-type', 'application/json')
-            ;
+            self::$response = $this->getWithHeader(400, 400, $e->getMessage());
         }
-        catch (Throwable $e){
-            self::$response
-                ->withStatus(500)
-                ->withBody(
-                    self::$streamFactory
-                        ->createStream(
-                            json_encode(
-                                [
-                                    'error' => [
-                                        'reason' => $e->getMessage(),
-                                        'code'   => 500,
-                                    ],
-                                    'code'  => 500,
-                                ]
-                            )
-                        )
-                )
-                ->withHeader('Content-type', 'application/json');
+        catch (Throwable $e) {
+            self::$response = $this->getWithHeader(500, 500, $e->getMessage());
         }
 
         $this->emit(self::$response);
+    }
+
+    protected function encodeError(int $code, string $message) : string|false
+    {
+        return json_encode(
+            [
+                'error' => [
+                    'reason' => $message,
+                    'code'   => $code,
+                ],
+                'code'  => $code,
+            ]
+        );
+    }
+
+    protected function getWithHeader(int $statusCode, int $code, string $message) : ResponseInterface
+    {
+        return self::$response
+            ->withStatus($statusCode)
+            ->withBody(
+                self::$streamFactory
+                    ->createStream(
+                        $this->encodeError($code, $message)
+                    )
+            )
+            ->withHeader('Content-type', 'application/json')
+        ;
     }
 
     private function emit(ResponseInterface $response) : void
