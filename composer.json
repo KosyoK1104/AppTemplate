@@ -1,6 +1,7 @@
 {
   "name": "kosyok1104/apptemplate",
   "description": "App template",
+  "license": "proprietary",
   "config": {
     "platform": {
       "php": "8.2"
