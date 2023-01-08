@@ -10,16 +10,16 @@ final class HtmlResponseFactory extends ResponseFactory
 {
     public function unauthorized() : ResponseInterface
     {
-        return parent::unauthorized()->withHeader('Content-type', 'plain/text');
+        return parent::unauthorized()->withHeader('Content-type', 'text/html');
     }
 
     public function error(string $error, $code = 400) : ResponseInterface
     {
-        return parent::error($error, $code)->withHeader('Content-type', 'plain/text');
+        return parent::error($error, $code)->withHeader('Content-type', 'text/html');
     }
 
     public function success(string $data, $code = 200) : ResponseInterface
     {
-        return parent::success($data, $code)->withHeader('Content-type', 'plain/text');
+        return parent::success($data, $code)->withHeader('Content-type', 'text/html');
     }
 }

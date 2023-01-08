@@ -43,7 +43,7 @@ final class MethodStrategy extends ApplicationStrategy
                 $parameters[$key] = $request;
                 continue;
             }
-            $parameters[$key] = $this->getContainer()->get($dependency->getType()->getName());
+            $parameters[$key] = $this->getContainer()?->get($dependency->getType()?->getName());
         }
         /**
          * @var Controller $controller[0]

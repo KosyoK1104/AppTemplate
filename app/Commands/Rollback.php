@@ -6,7 +6,7 @@ namespace App\Commands;
 
 final class Rollback extends \Phinx\Console\Command\Rollback
 {
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
         $this->setName('migration:rollback');

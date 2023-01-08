@@ -19,8 +19,4 @@ final class Page extends Limit {
         ];
     }
 
-    public function jsonSerialize() : array
-    {
-        return $this->toArray();
-    }
 }

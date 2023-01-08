@@ -10,10 +10,11 @@ namespace App\Shared\Database;
 
 use PDO;
 use PDOStatement;
+use RuntimeException;
 
 final class Database
 {
-    private ?PDO $db;
+    private ?PDO $pdo;
     private ?PDOStatement $stmt;
     private readonly string $dsn;
     private int $fetchMode = PDO::FETCH_ASSOC;
@@ -28,7 +29,7 @@ final class Database
         private array $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,]
     ) {
         $this->dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->database . ';port=' . $this->port . ';charset=' . $this->charset;
-        if (!in_array(PDO::ERRMODE_EXCEPTION, $this->options)) {
+        if (!in_array(PDO::ERRMODE_EXCEPTION, $this->options, true)) {
             $this->options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
         }
     }
@@ -36,34 +37,34 @@ final class Database
     public function beginTransaction() : void
     {
         $this->connect();
-        $this->db->beginTransaction();
+        $this->pdo->beginTransaction();
     }
 
     public function connect() : void
     {
-        if (!isset($this->db)) {
-            $this->db = new PDO($this->dsn, $this->username, $this->password, $this->options);
+        if (!isset($this->pdo)) {
+            $this->pdo = new PDO($this->dsn, $this->username, $this->password, $this->options);
         }
     }
 
     public function commit() : void
     {
-        $this->db->commit();
+        $this->pdo->commit();
     }
 
     public function rollback() : void
     {
-        $this->db->rollback();
+        $this->pdo->rollback();
     }
 
     public function disconnect() : void
     {
-        unset($this->db);
+        unset($this->pdo);
     }
 
     public function pdo() : PDO
     {
-        return $this->db;
+        return $this->pdo;
     }
 
     /**
@@ -73,7 +74,7 @@ final class Database
      */
     public function escapeString(string $value) : string
     {
-        return $this->db->quote($value);
+        return $this->pdo->quote($value);
     }
 
     /**
@@ -84,11 +85,13 @@ final class Database
     private function run(string $query, array $binds = []) : void
     {
         if (empty($binds)) {
-            $this->stmt = $this->db->query($query);
+            $this->stmt = $this->pdo->query($query);
+        }
+        else {
+            $this->stmt = $this->pdo->prepare($query);
+            $this->bindValues($binds);
         }
 
-        $this->stmt = $this->db->prepare($query);
-        $this->bindValues($binds);
         $this->stmt->execute();
     }
 
@@ -98,7 +101,7 @@ final class Database
      * @param array $binds
      * @return array
      */
-    public function rows(string $query, array $binds = []) : array
+    public function find(string $query, array $binds = []) : array
     {
         $this->run($query, $binds);
         return $this->stmt->fetchAll($this->fetchMode);
@@ -112,12 +115,15 @@ final class Database
      * @param array $binds
      * @return array|false
      */
-    public function row(string $query, array $binds = []) : array|false
+    public function findOne(string $query, array $binds = []) : array|false
     {
         $this->run($query, $binds);
         $result = $this->stmt->fetch($this->fetchMode);
         if (empty($result)) {
             return false;
+        }
+        if (count($result) !== 0) {
+            throw new RuntimeException('Two or more rows were found when asked for one!');
         }
         return $result;
     }
@@ -154,7 +160,7 @@ final class Database
 
     public function lastInsertId() : bool|string
     {
-        return $this->db->lastInsertId();
+        return $this->pdo->lastInsertId();
     }
 
     private function bindValues(array $binds) : void
@@ -176,20 +182,20 @@ final class Database
         if (is_int($value)) {
             $this->stmt->bindValue($key, $value, PDO::PARAM_INT);
         }
-        elseif (is_int($value)) {
-            $this->stmt->bindValue($key, $value, PDO::PARAM_INT);
+        elseif (is_null($value)) {
+            $this->stmt->bindValue($key, $value, PDO::PARAM_NULL);
         }
         elseif (is_bool($value)) {
             $this->stmt->bindValue($key, $value, PDO::PARAM_BOOL);
         }
         else {
-            $this->stmt->bindValue($key, $value);
+            $this->stmt->bindValue($key, $value, PDO::PARAM_STR);
         }
     }
 
     public function nextId(string $table) : ?int
     {
         $query = "SHOW TABLE STATUS WHERE Name = :table;";
-        return $this->row($query, ['table' => $table])['Auto_increment'];
+        return $this->findOne($query, ['table' => $table])['Auto_increment'];
     }
 }

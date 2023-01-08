@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ServiceProviders;
+namespace App\Providers;
 
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use Twig\Environment;

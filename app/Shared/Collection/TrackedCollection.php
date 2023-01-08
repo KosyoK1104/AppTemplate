@@ -45,9 +45,17 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
         $this->trashed = [];
     }
 
-    protected function guard(array $items) : void
+    protected function guard(mixed $items) : void
     {
-        $type = null;
+        if (!is_array($items)) {
+            $items = [$items];
+        }
+        if ($this->isEmpty()) {
+            $type = null;
+        }
+        else {
+            $type = get_class($this->first());
+        }
         foreach ($items as $item) {
             if ($type === null) {
                 $type = get_class($item);
@@ -98,14 +106,19 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
         return $this->trashed;
     }
 
-    public function add($item) : void
+    public function add(mixed $item) : void
     {
+        $this->guard($item);
         $this->dirty[] = $item;
     }
 
-    public function remove($item) : void
+    public function remove(mixed $item) : void
     {
-        $this->trashed[] = $item;
+        $key = array_search($item, $this->clean, true);
+        if ($key) {
+            array_splice($this->clean, $key, 1);
+            $this->trashed[] = $item;
+        }
     }
 
     public function map(callable $callback) : array
@@ -116,11 +129,6 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
     public function filter(callable $callback) : array
     {
         return array_filter($this->items(), $callback);
-    }
-
-    public function reduce(callable $callback, $initial = null)
-    {
-        return array_reduce($this->items(), $callback, $initial);
     }
 
     public function getIterator() : Traversable
@@ -136,5 +144,10 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
     public function toArray() : array
     {
         return $this->items();
+    }
+
+    public function first() : mixed
+    {
+        return $this->clean[0];
     }
 }

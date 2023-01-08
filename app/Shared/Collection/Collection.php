@@ -32,9 +32,17 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
         $this->items = $items;
     }
 
-    protected function guard(array $items) : void
+    protected function guard(mixed $items) : void
     {
-        $type = null;
+        if (!is_array($items)) {
+            $items = [$items];
+        }
+        if ($this->isEmpty()) {
+            $type = null;
+        }
+        else {
+            $type = get_class($this->first());
+        }
         foreach ($items as $item) {
             if ($type === null) {
                 $type = get_class($item);
@@ -65,22 +73,23 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
         return !empty($this->items);
     }
 
-    public function first()
+    public function first() : mixed
     {
         return reset($this->items);
     }
 
-    public function last()
+    public function last() : mixed
     {
         return end($this->items);
     }
 
-    public function add($item) : void
+    public function add(mixed $item) : void
     {
+        $this->guard($item);
         $this->items[] = $item;
     }
 
-    public function remove($item) : void
+    public function remove(mixed $item) : void
     {
         $key = array_search($item, $this->items, true);
         if ($key !== false) {
@@ -93,23 +102,24 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
         $this->items = [];
     }
 
-    public function contains($item) : bool
+    public function contains(mixed $item) : bool
     {
         return in_array($item, $this->items, true);
     }
 
-    public function containsKey($key) : bool
+    public function containsKey(mixed $key) : bool
     {
         return array_key_exists($key, $this->items);
     }
 
-    public function get($key)
+    public function get(mixed $key) : mixed
     {
         return $this->items[$key] ?? null;
     }
 
-    public function set($key, $item) : void
+    public function set(int $key, mixed $item) : void
     {
+        $this->guard($item);
         $this->items[$key] = $item;
     }
 
@@ -131,11 +141,6 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
     public function filter(callable $callback) : array
     {
         return array_filter($this->items, $callback);
-    }
-
-    public function reduce(callable $callback, $initial = null)
-    {
-        return array_reduce($this->items, $callback, $initial);
     }
 
     public function jsonSerialize() : array

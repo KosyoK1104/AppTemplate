@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\ServiceProviders;
+namespace App\Providers;
 
 use App\Kernel\Http\Middlewares\DatabaseMiddleware;
 use App\Kernel\Http\Strategies\MethodStrategy;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Route\Router;
-use Throwable;
 
 final class RouterServiceProvider extends AbstractServiceProvider
 {
@@ -28,12 +27,7 @@ final class RouterServiceProvider extends AbstractServiceProvider
             $strategy = new MethodStrategy();
             $strategy->setContainer($container);
             $router->setStrategy($strategy);
-            try {
-                $router->middleware($container->get(DatabaseMiddleware::class));
-            }
-            catch (Throwable) {
-                // do nothing
-            }
+            $router->middleware($container->get(DatabaseMiddleware::class));
             return $router;
         });
     }

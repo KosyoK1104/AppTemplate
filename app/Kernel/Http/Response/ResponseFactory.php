@@ -16,25 +16,36 @@ abstract class ResponseFactory
     ) {
     }
 
-    public function unauthorized(): ResponseInterface
+    public function unauthorized() : ResponseInterface
     {
-        $response = $this->responseFactory->createResponse(403);
-
-        return $response->withBody($this->streamFactory->createStream('Unauthorized'));
+        return $this->responseFactory
+            ->createResponse(403)
+            ->withBody(
+                $this->streamFactory
+                    ->createStream('Unauthorized')
+            )
+        ;
     }
 
-    public function error(string $error, $code = 400): ResponseInterface
+    public function error(string $error, int $code = 400) : ResponseInterface
     {
-        $response = $this->responseFactory->createResponse($code);
-
-        return $response->withBody($this->streamFactory->createStream($error));
+        return $this->responseFactory
+            ->createResponse($code)
+            ->withBody(
+                $this->streamFactory
+                    ->createStream($error)
+            )
+        ;
     }
 
-
-    public function success(string $data, $code = 200): ResponseInterface
+    public function success(string $data, int $code = 200) : ResponseInterface
     {
-        $response = $this->responseFactory->createResponse($code);
-
-        return $response->withBody($this->streamFactory->createStream($data));
+        return $this->responseFactory
+            ->createResponse($code)
+            ->withBody(
+                $this->streamFactory
+                    ->createStream($data)
+            )
+        ;
     }
 }

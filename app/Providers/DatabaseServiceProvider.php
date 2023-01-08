@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\ServiceProviders;
+namespace App\Providers;
 
 use App\Shared\Database\Database;
 use League\Container\ServiceProvider\AbstractServiceProvider;
@@ -17,9 +17,6 @@ final class DatabaseServiceProvider extends AbstractServiceProvider
 
     public function register() : void
     {
-        if(!env('DB_NAME') || !env('DB_HOST') || !env('DB_USERNAME') || !env('DB_PASSWORD')) {
-         return;
-        }
         $this->container->addShared(
             Database::class,
             function () {
