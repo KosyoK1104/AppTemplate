@@ -3,11 +3,11 @@
 
 declare(strict_types=1);
 
+use App\Shared\Database\Database;
 use Dotenv\Dotenv;
 use League\Container\Container;
 use Symfony\Component\Console\Application;
 
-define("ROOT_DIR", dirname(__DIR__));
 if (!defined('CONSOLE_APP')) {
     define('CONSOLE_APP', true);
 }
@@ -19,6 +19,20 @@ $dotenv->load();
  * @var Container $container
  */
 require 'app/dependencies.php';
-$consoleApp = new Application('App Console');
-$consoleApp->addCommands(array_map(fn($command) => $container->get($command), require 'app/Commands/Commands.php'));
-$consoleApp->run();
+
+try {
+    $consoleApp = new Application('App Console');
+    $consoleApp->addCommands(array_map(fn($command) => $container->get($command), require 'app/Commands/Commands.php'));
+
+    $consoleApp->run();
+    /**
+     * @var Database $db
+     */
+    $db = $container->get(Database::class);
+    $db->commit();
+}
+catch (Throwable $e) {
+    $this->database->rollback();
+    /** @noinspection PhpUnhandledExceptionInspection */
+    throw $e;
+}

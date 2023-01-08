@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace App\Shared\Pagination;
 
-use App\Shared\Collection\Collection;
+use JsonSerializable;
 
-final class PaginatedCollection extends Collection
+final class PaginatedCollection implements JsonSerializable
 {
     public function __construct(
-        $items,
+        public readonly array $items,
         public readonly Limit $limit,
     ) {
-        parent::__construct($items);
     }
 
     public function toArray() : array
     {
         return [
-            'items'      => $this->items(),
-            'pagination' => $this->pagination()
+            'items'      => $this->items,
+            'pagination' => $this->pagination(),
         ];
     }
 
@@ -31,9 +30,9 @@ final class PaginatedCollection extends Collection
     public function pagination() : array
     {
         return [
-            'total_pages'  => ceil($this->count() / $this->limit->limit),
+            'total_pages'  => ceil(count($this->items) / $this->limit->limit),
             'current_page' => $this->limit->offset / $this->limit->limit + 1,
-            'total'        => $this->count(),
+            'total'        => count($this->items),
             'from'         => $this->limit->offset + 1,
             'to'           => $this->limit->offset + $this->limit->limit,
             'per_page'     => $this->limit->limit,

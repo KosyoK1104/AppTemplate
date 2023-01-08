@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require 'vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -15,8 +17,8 @@ return
     ],
     'environments' => [
         'default_migration_table' => 'dbx_migrations',
-        'default_environment' => 'development',
-        'production' => [
+        'default_environment' => 'local',
+        'prod' => [
             'adapter' => 'mysql',
             'host' => env('DB_HOST'),
             'name' => env('DB_NAME'),
@@ -25,7 +27,7 @@ return
             'port' => '3306',
             'charset' => 'utf8',
         ],
-        'development' => [
+        'dev' => [
             'adapter' => 'mysql',
             'host' => env('DB_HOST'),
             'name' => env('DB_NAME'),
@@ -34,7 +36,7 @@ return
             'port' => '3306',
             'charset' => 'utf8',
         ],
-        'testing' => [
+        'local' => [
             'adapter' => 'mysql',
             'host' => env('DB_HOST'),
             'name' => env('DB_NAME'),

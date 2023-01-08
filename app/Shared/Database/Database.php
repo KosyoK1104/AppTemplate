@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Database;
 
+use App\Shared\Database\Exceptions\DatabaseException;
 use PDO;
 use PDOStatement;
-use RuntimeException;
 
 final class Database
 {
@@ -123,7 +123,7 @@ final class Database
             return false;
         }
         if (count($result) !== 0) {
-            throw new RuntimeException('Two or more rows were found when asked for one!');
+            throw new DatabaseException('Two or more rows were found when asked for one!');
         }
         return $result;
     }
@@ -188,8 +188,11 @@ final class Database
         elseif (is_bool($value)) {
             $this->stmt->bindValue($key, $value, PDO::PARAM_BOOL);
         }
+        elseif (is_string($value)) {
+            $this->stmt->bindValue($key, $value);
+        }
         else {
-            $this->stmt->bindValue($key, $value, PDO::PARAM_STR);
+            throw new DatabaseException("Cannot bind value of type " . gettype($value));
         }
     }
 

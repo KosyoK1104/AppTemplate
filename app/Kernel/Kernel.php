@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Kernel;
 
-use App\Kernel\Http\Handlers\ExceptionHandler;
 use App\Kernel\Http\Handlers\ExceptionHandlerInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use League\Route\Router;
@@ -18,8 +17,11 @@ use Throwable;
 final class Kernel
 {
     private static ContainerInterface $container;
-    private static ServerRequestInterface $serverRequest;
-    private static ResponseInterface $response;
+
+    private ResponseInterface $response;
+    private readonly ServerRequestInterface $serverRequest;
+    private readonly Router $router;
+    private readonly ExceptionHandlerInterface $exceptionHandler;
 
     /**
      * @throws NotFoundExceptionInterface
@@ -27,8 +29,10 @@ final class Kernel
      */
     private function __construct()
     {
-        self::$response = self::$container->get(ResponseInterface::class);
-        self::$serverRequest = self::$container->get(ServerRequestInterface::class);
+        $this->response = self::$container->get(ResponseInterface::class);
+        $this->serverRequest = self::$container->get(ServerRequestInterface::class);
+        $this->router = self::$container->get(Router::class);
+        $this->exceptionHandler = self::$container->get(ExceptionHandlerInterface::class);
     }
 
     /** @noinspection MagicMethodsValidityInspection */
@@ -45,22 +49,13 @@ final class Kernel
     public function run() : void
     {
         try {
-            /**
-             * @var Router $router
-             */
-            $router = self::$container->get(Router::class);
-
-            self::$response = $router->dispatch(self::$serverRequest);
+            $this->response = $this->router->dispatch($this->serverRequest);
         }
         catch (Throwable $e) {
-            /**
-             * @var ExceptionHandler $exceptionHandler
-             */
-            $exceptionHandler = self::$container->get(ExceptionHandlerInterface::class);
-            self::$response = $exceptionHandler->handle($e, self::$response);
+            $this->response = $this->exceptionHandler->handle($e, $this->response);
         }
 
-        $this->emit(self::$response);
+        $this->emit($this->response);
     }
 
     private function emit(ResponseInterface $response) : void

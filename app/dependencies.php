@@ -48,5 +48,3 @@ $container->inflector(RestController::class)
 $container->delegate(
     new League\Container\ReflectionContainer(true)
 );
-
-return $container;
