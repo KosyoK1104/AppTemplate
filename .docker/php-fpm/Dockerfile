@@ -6,8 +6,8 @@ RUN apt-get update; \
         php8.2-mysql; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
-#
-## Copy existing application directory contents
-#COPY . /var/www
-#
-#RUN chown -R www-data:www-data /var/www/public
+
+# Copy existing application directory contents
+RUN mkdir -p /var/www/public
+
+RUN chown -R www-data:www-data /var/www/public
