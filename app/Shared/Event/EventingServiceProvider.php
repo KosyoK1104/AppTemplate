@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace App\Shared\Event;
 
-use App\Shared\Event\EventDispatcher;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 
-final class EventDispatcherServiceProvider extends AbstractServiceProvider
+final class EventingServiceProvider extends AbstractServiceProvider
 {
 
     public function provides(string $id) : bool

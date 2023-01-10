@@ -8,11 +8,12 @@ use App\Kernel\Http\Response\HtmlResponseFactory;
 use App\Kernel\Http\Response\RestResponseFactory;
 use App\Providers\ConfigurationServiceProvider;
 use App\Providers\DatabaseServiceProvider;
-use App\Providers\EventDispatcherServiceProvider;
 use App\Providers\ExceptionHandlerServiceProvider;
 use App\Providers\HttpServiceProvider;
 use App\Providers\RouterServiceProvider;
 use App\Providers\TemplateServiceProvider;
+use App\Shared\Event\EventingServiceProvider;
+use App\Shared\Identification\IdentificationServiceProvider;
 use League\Container\Container;
 use Twig\Environment;
 
@@ -27,7 +28,8 @@ $container->addServiceProvider(new TemplateServiceProvider());
 $container->addServiceProvider(new HttpServiceProvider());
 $container->addServiceProvider(new DatabaseServiceProvider());
 $container->addServiceProvider(new ExceptionHandlerServiceProvider());
-$container->addServiceProvider(new EventDispatcherServiceProvider());
+$container->addServiceProvider(new EventingServiceProvider());
+$container->addServiceProvider(new IdentificationServiceProvider());
 
 $container->inflector(HtmlController::class)
     ->invokeMethods(

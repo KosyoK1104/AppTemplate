@@ -16,7 +16,8 @@
     "twig/twig": "v3.5.0",
     "ext-pdo": "*",
     "symfony/console": "^6.2.3",
-    "robmorgan/phinx": "^0.12.13"
+    "robmorgan/phinx": "^0.12.13",
+    "ramsey/uuid": "^4.7"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

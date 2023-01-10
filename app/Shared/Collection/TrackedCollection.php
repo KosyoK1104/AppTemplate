@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Collection;
 
+use App\Shared\Collection\Exceptions\TrackedCollectionException;
 use ArrayIterator;
 use Countable;
 use InvalidArgumentException;
@@ -61,7 +62,7 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
                 $type = get_class($item);
             }
             if (get_class($item) !== $type) {
-                throw new InvalidArgumentException('All items must be of the same type');
+                throw new TrackedCollectionException('All items must be of the same type');
             }
         }
     }

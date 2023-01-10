@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Collection;
 
+use App\Shared\Collection\Exceptions\CollectionException;
 use ArrayIterator;
 use Countable;
-use InvalidArgumentException;
 use IteratorAggregate;
 use JsonSerializable;
 use Traversable;
@@ -21,8 +21,7 @@ use Traversable;
 abstract class Collection implements Countable, IteratorAggregate, JsonSerializable
 {
     /**
-     * @var array<int, T>
-     * @psalm-var array<int, T>
+     * @var array<int|string, T>
      */
     private array $items;
 
@@ -43,12 +42,15 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
         else {
             $type = get_class($this->first());
         }
-        foreach ($items as $item) {
+        foreach ($items as $key => $item) {
             if ($type === null) {
                 $type = get_class($item);
             }
             if (get_class($item) !== $type) {
-                throw new InvalidArgumentException('All items must be of the same type');
+                throw new CollectionException('All items must be of the same type');
+            }
+            if (!is_string($key) && !is_int($key)) {
+                throw new CollectionException('Invalid key ' . $key . '!');
             }
         }
     }
@@ -93,7 +95,7 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
     {
         $key = array_search($item, $this->items, true);
         if ($key !== false) {
-            unset($this->items[$key]);
+            array_splice($this->items, $key, 1);
         }
     }
 
@@ -117,7 +119,7 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
         return $this->items[$key] ?? null;
     }
 
-    public function set(int $key, mixed $item) : void
+    public function set(int|string $key, mixed $item) : void
     {
         $this->guard($item);
         $this->items[$key] = $item;

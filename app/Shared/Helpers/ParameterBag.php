@@ -67,4 +67,51 @@ class ParameterBag implements IteratorAggregate
     {
         return new ArrayIterator($this->items);
     }
+
+    public function boolean(string $index, bool $default = false) : bool
+    {
+        if (array_key_exists($index, $this->items)) {
+            return (bool) $this->items[$index];
+        }
+        return $default;
+    }
+
+    public function booleanOrNull(string $index) : ?bool
+    {
+        if (array_key_exists($index, $this->items)) {
+            return (bool) $this->items[$index];
+        }
+        return null;
+    }
+
+    public function float(string $index, float $default = 0.0) : float
+    {
+        if (array_key_exists($index, $this->items)) {
+            return (float) $this->items[$index];
+        }
+        return $default;
+    }
+
+    public function floatOrNull(string $index) : ?float
+    {
+        if (array_key_exists($index, $this->items)) {
+            return (float) $this->items[$index];
+        }
+        return null;
+    }
+
+    public function all() : array
+    {
+        return $this->items;
+    }
+
+    public function has(string $index) : bool
+    {
+        return array_key_exists($index, $this->items);
+    }
+
+    public function hasNot(string $index) : bool
+    {
+        return !$this->has($index);
+    }
 }

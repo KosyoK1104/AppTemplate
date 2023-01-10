@@ -30,4 +30,19 @@ class AbstractString
             throw new InvalidArgumentException('asd');
         }
     }
+
+    public function __toString() : string
+    {
+        return $this->value;
+    }
+
+    public function equals(AbstractString $other) : bool
+    {
+        return $this->value === $other->value;
+    }
+
+    public function doesNotEqual(AbstractString $other) : bool
+    {
+        return !$this->equals($other);
+    }
 }

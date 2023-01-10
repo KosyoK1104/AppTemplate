@@ -30,4 +30,29 @@ class NullableAbstractString
             throw new InvalidArgumentException('asd');
         }
     }
+
+    public function __toString() : string
+    {
+        return $this->value ?? '';
+    }
+
+    public function equals(NullableAbstractString $other) : bool
+    {
+        return $this->value === $other->value;
+    }
+
+    public function doesNotEqual(NullableAbstractString $other) : bool
+    {
+        return !$this->equals($other);
+    }
+
+    public function isNull() : bool
+    {
+        return is_null($this->value);
+    }
+
+    public function isNotNull() : bool
+    {
+        return !$this->isNull();
+    }
 }

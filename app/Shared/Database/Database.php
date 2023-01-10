@@ -101,7 +101,7 @@ final class Database
      * @param array $binds
      * @return array
      */
-    public function find(string $query, array $binds = []) : array
+    public function select(string $query, array $binds = []) : array
     {
         $this->run($query, $binds);
         return $this->stmt->fetchAll($this->fetchMode);
@@ -115,7 +115,7 @@ final class Database
      * @param array $binds
      * @return array|false
      */
-    public function findOne(string $query, array $binds = []) : array|false
+    public function selectOne(string $query, array $binds = []) : array|false
     {
         $this->run($query, $binds);
         $result = $this->stmt->fetch($this->fetchMode);
@@ -153,6 +153,24 @@ final class Database
      * @return int
      */
     public function execute(string $query, array $binds) : int
+    {
+        $this->run($query, $binds);
+        return $this->stmt->rowCount();
+    }
+
+    public function insert(string $query, array $binds) : string|bool
+    {
+        $this->run($query, $binds);
+        return $this->pdo->lastInsertId();
+    }
+
+    public function delete(string $query, array $binds) : int
+    {
+        $this->run($query, $binds);
+        return $this->stmt->rowCount();
+    }
+
+    public function update(string $query, array $binds) : int
     {
         $this->run($query, $binds);
         return $this->stmt->rowCount();
@@ -199,6 +217,6 @@ final class Database
     public function nextId(string $table) : ?int
     {
         $query = "SHOW TABLE STATUS WHERE Name = :table;";
-        return $this->findOne($query, ['table' => $table])['Auto_increment'];
+        return $this->selectOne($query, ['table' => $table])['Auto_increment'];
     }
 }

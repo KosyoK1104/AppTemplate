@@ -24,7 +24,7 @@ abstract class RestController extends Controller
         if ($data instanceof PaginatedCollection) {
             return $this->respondSuccess(
                 [
-                    'data'       => ObjectToArrayTransformer::transform($data->items()),
+                    'data'       => ObjectToArrayTransformer::transform($data->items),
                     'pagination' => $data->pagination(),
                 ],
                 $status

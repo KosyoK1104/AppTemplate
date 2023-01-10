@@ -7,6 +7,7 @@ namespace App\Kernel\Http\Response;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
 
 abstract class ResponseFactory
 {
@@ -47,5 +48,12 @@ abstract class ResponseFactory
                     ->createStream($data)
             )
         ;
+    }
+
+    private function createStream(string $data) : StreamInterface
+    {
+        $stream = $this->streamFactory->createStream($data);
+        $stream->rewind();
+        return $stream;
     }
 }

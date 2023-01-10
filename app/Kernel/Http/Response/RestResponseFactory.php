@@ -8,18 +8,20 @@ use Psr\Http\Message\ResponseInterface;
 
 final class RestResponseFactory extends ResponseFactory
 {
+    private const HEADER_CONTENT_TYPE = 'application/json';
+
     public function unauthorized() : ResponseInterface
     {
-        return parent::unauthorized()->withHeader('Content-type', 'application/json');
+        return parent::unauthorized()->withHeader('Content-type', self::HEADER_CONTENT_TYPE);
     }
 
     public function error(string $error, $code = 400) : ResponseInterface
     {
-        return parent::error($error, $code)->withHeader('Content-type', 'application/json');
+        return parent::error($error, $code)->withHeader('Content-type', self::HEADER_CONTENT_TYPE);
     }
 
     public function success(string $data = '', $code = 200) : ResponseInterface
     {
-        return parent::success($data, $code)->withHeader('Content-type', 'application/json');
+        return parent::success($data, $code)->withHeader('Content-type', self::HEADER_CONTENT_TYPE);
     }
 }

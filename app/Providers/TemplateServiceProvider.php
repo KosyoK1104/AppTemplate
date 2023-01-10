@@ -11,17 +11,17 @@ use Twig\Loader\FilesystemLoader;
 final class TemplateServiceProvider extends AbstractServiceProvider
 {
 
-    public function provides(string $id): bool
+    public function provides(string $id) : bool
     {
         return $id === Environment::class;
     }
 
-    public function register(): void
+    public function register() : void
     {
         $this->container->addShared(Environment::class, function () {
             $loader = new FilesystemLoader(ROOT_DIR . '/templates');
             $twig = new Environment($loader);
-
+            $twig->addGlobal('title', env("APP_TITLE", 'No title'));
             return $twig;
         });
     }

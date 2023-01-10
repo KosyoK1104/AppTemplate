@@ -57,11 +57,14 @@ final class EventDispatcher
     }
 
     /**
-     * @param Event[] $events
+     * @param Event[]|WithEvents $events
      * @return void
      */
-    public function dispatchEvents(array $events) : void
+    public function dispatchEvents(array|WithEvents $events) : void
     {
+        if ($events instanceof WithEvents) {
+            $events = $events->events();
+        }
         foreach ($events as $event) {
             $this->dispatch($event);
         }
