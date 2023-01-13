@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Commands;
+namespace App\Console\Commands;
 
 final class Status extends \Phinx\Console\Command\Status
 {

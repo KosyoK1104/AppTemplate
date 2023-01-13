@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Console\ConsoleServiceProvider;
 use App\Kernel\Http\Controllers\HtmlController;
 use App\Kernel\Http\Controllers\RestController;
 use App\Kernel\Http\Response\HtmlResponseFactory;
@@ -23,6 +24,7 @@ $container = new Container();
  * Service providers
  */
 $container->addServiceProvider(new ConfigurationServiceProvider());
+$container->addServiceProvider(new ConsoleServiceProvider());
 $container->addServiceProvider(new RouterServiceProvider());
 $container->addServiceProvider(new TemplateServiceProvider());
 $container->addServiceProvider(new HttpServiceProvider());

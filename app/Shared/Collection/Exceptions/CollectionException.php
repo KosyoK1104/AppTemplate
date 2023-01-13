@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Collection\Exceptions;
 
-final class CollectionException extends \RuntimeException
+use RuntimeException;
+
+final class CollectionException extends RuntimeException
 {
 }

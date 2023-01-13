@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Identification\Exceptions;
 
-final class InvalidUuidArgument extends \InvalidArgumentException
+use InvalidArgumentException;
+
+final class InvalidUuidArgument extends InvalidArgumentException
 {
     public static function forClass(string $class) : self
     {
