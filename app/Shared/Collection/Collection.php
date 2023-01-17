@@ -16,7 +16,6 @@ use Traversable;
  * @implements IteratorAggregate<int, T>
  * @implements JsonSerializable<T>
  * @implements Countable<int>
- * @psalm-immutable
  */
 abstract class Collection implements Countable, IteratorAggregate, JsonSerializable
 {
@@ -24,30 +23,30 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
      * @var array<int|string, T>
      */
     private array $items;
+    /**
+     * @var class-string<T> $className
+     */
+    private readonly string $className;
 
-    public function __construct(array $items = [])
+    public function __construct(array $items, string $className)
     {
+        $this->className = $className;
         $this->guard($items);
         $this->items = $items;
     }
 
+    /**
+     * @param mixed $items
+     * @return void
+     */
     protected function guard(mixed $items) : void
     {
         if (!is_array($items)) {
             $items = [$items];
         }
-        if ($this->isEmpty()) {
-            $type = null;
-        }
-        else {
-            $type = get_class($this->first());
-        }
         foreach ($items as $key => $item) {
-            if ($type === null) {
-                $type = get_class($item);
-            }
-            if (get_class($item) !== $type) {
-                throw new CollectionException('All items must be of the same type');
+            if (!is_a($item, $this->className)) {
+                throw new CollectionException(sprintf('Item %s must be an instance of %s', $key, $this->className));
             }
             if (!is_string($key) && !is_int($key)) {
                 throw new CollectionException('Invalid key ' . $key . '!');
@@ -160,4 +159,12 @@ abstract class Collection implements Countable, IteratorAggregate, JsonSerializa
         return $this->items;
     }
 
+    /**
+     * @param class-string<T> $className
+     * @return static<T>
+     */
+    public static function empty(string $className) : self
+    {
+        return new static([], $className);
+    }
 }

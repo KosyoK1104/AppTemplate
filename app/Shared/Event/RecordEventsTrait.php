@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Event;
 
-trait WithEventsTrait
+trait RecordEventsTrait
 {
     /**
      * @var Event[] $events

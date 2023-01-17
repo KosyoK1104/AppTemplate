@@ -19,10 +19,17 @@ final class EventingServiceProvider extends AbstractServiceProvider
         $container = $this->container;
         $container->addShared(EventDispatcher::class, function () use ($container) {
             $eventDispatcher = new EventDispatcher($container);
-            $eventDispatcher->addListners(
-                [
-                    // add EventListener::class[]
-                ]
+            $eventDispatcher->addListeners(
+            /*[
+                Event::class => [
+                    EventListener1::class,
+                    EventListener2::class,
+                ],
+
+                Event2::class => [
+                    EventListener1::class,
+                ],
+            ]*/
             );
             return $eventDispatcher;
         });

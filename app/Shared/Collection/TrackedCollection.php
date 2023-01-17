@@ -7,7 +7,6 @@ namespace App\Shared\Collection;
 use App\Shared\Collection\Exceptions\TrackedCollectionException;
 use ArrayIterator;
 use Countable;
-use InvalidArgumentException;
 use IteratorAggregate;
 use JsonSerializable;
 use Traversable;
@@ -23,7 +22,6 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
 {
     /**
      * @var array<int, T>
-     * @psalm-var array<int, T>
      */
     private array $clean;
     /**
@@ -34,12 +32,18 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
      * @var array<int, T>
      */
     private array $trashed;
+    /**
+     * @var class-string<T> $className
+     */
+    private string $className;
 
     /**
      * @param array<int, T> $items
+     * @param class-string<T> $className
      */
-    public function __construct(array $items = [])
+    public function __construct(array $items, string $className)
     {
+        $this->className = $className;
         $this->guard($items);
         $this->clean = $items;
         $this->dirty = [];
@@ -51,18 +55,9 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
         if (!is_array($items)) {
             $items = [$items];
         }
-        if ($this->isEmpty()) {
-            $type = null;
-        }
-        else {
-            $type = get_class($this->first());
-        }
         foreach ($items as $item) {
-            if ($type === null) {
-                $type = get_class($item);
-            }
-            if (get_class($item) !== $type) {
-                throw new TrackedCollectionException('All items must be of the same type');
+            if (!is_a($item, $this->className)) {
+                throw new TrackedCollectionException(sprintf('Item must be an instance of %s', $this->className));
             }
         }
     }
@@ -150,5 +145,14 @@ abstract class TrackedCollection implements Countable, IteratorAggregate, JsonSe
     public function first() : mixed
     {
         return $this->clean[0];
+    }
+
+    /**
+     * @param class-string<T> $className
+     * @return static<T>
+     */
+    public static function empty(string $className) : self
+    {
+        return new static([], $className);
     }
 }

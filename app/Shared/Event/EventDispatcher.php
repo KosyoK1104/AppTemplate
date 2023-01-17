@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Shared\Event;
 
-use Psr\Container\ContainerExceptionInterface;
+use App\Shared\Event\Exceptions\EventingException;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 
 final class EventDispatcher
 {
+
     /**
-     * @var array<class-string, EventListener> $listeners
+     * @param array<class-string, array<class-string>> $listeners
      */
     private array $listeners = [];
 
@@ -21,52 +21,62 @@ final class EventDispatcher
     }
 
     /**
-     * @param array<class-string> $listeners
+     * @param array<class-string, array<class-string>> $listeners
      * @return void
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
-    public function addListners(array $listeners) : void
+    public function addListeners(array $listeners = []) : void
     {
-        foreach ($listeners as $listener) {
-            $this->addListener($listener);
+        foreach ($listeners as $event => $listener) {
+            foreach ($listener as $listenerClass) {
+                $this->addListener($event, $listenerClass);
+            }
         }
     }
 
     /**
-     * @param string $listener
+     * @param class-string $event
+     * @param class-string $listener
      * @return void
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
-    public function addListener(string $listener) : void
+    public function addListener(string $event, string $listener) : void
     {
-        $implements = class_implements($listener);
-        if (in_array(EventListener::class, $implements, true)) {
-            $this->listeners[$listener] = $this->container->get($listener);
+        if (!in_array(Event::class, class_implements($event), true)) {
+            throw new EventingException(sprintf('Class %s must implement %s', $event, Event::class));
+        }
+
+        if (!in_array(EventListener::class, class_implements($listener), true)) {
+            throw new EventingException(sprintf('Class %s must implement %s', $listener, EventListener::class));
+        }
+
+        $this->listeners[$event][] = $listener;
+    }
+
+    public function dispatch(RecordEvents $recordEvents) : void
+    {
+        foreach ($recordEvents->events() as $event) {
+            $this->dispatchEvent($event);
         }
     }
 
-    public function dispatch(Event $event) : void
+    public function dispatchEvent(Event $event) : void
     {
-        foreach ($this->listeners as $listener) {
-            if ($listener->isSubscribedTo($event)) {
+        $eventClass = get_class($event);
+        if (isset($this->listeners[$eventClass])) {
+            foreach ($this->listeners[$eventClass] as $listenerClass) {
+                $listener = $this->container->get($listenerClass);
                 $listener->handle($event);
             }
         }
     }
 
     /**
-     * @param Event[]|WithEvents $events
+     * @param array $events
      * @return void
      */
-    public function dispatchEvents(array|WithEvents $events) : void
+    public function dispatchEvents(array $events) : void
     {
-        if ($events instanceof WithEvents) {
-            $events = $events->events();
-        }
         foreach ($events as $event) {
-            $this->dispatch($event);
+            $this->dispatchEvent($event);
         }
     }
 }

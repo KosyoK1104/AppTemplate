@@ -37,7 +37,7 @@ final class ExceptionHandler implements ExceptionHandlerInterface
         if ($e instanceof AppException) {
             return $this->getWithHeader(400, $e->getMessage());
         }
-        return $this->getWithHeader(500, $e->getMessage());
+        return $this->getWithHeader(500, 'Unexpected error!');
     }
 
     private function debugResponse(Throwable $e) : ResponseInterface
