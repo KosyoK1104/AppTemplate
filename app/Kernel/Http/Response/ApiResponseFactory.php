@@ -6,7 +6,7 @@ namespace App\Kernel\Http\Response;
 
 use Psr\Http\Message\ResponseInterface;
 
-final class RestResponseFactory extends ResponseFactory
+final class ApiResponseFactory extends ResponseFactory
 {
     private const HEADER_CONTENT_TYPE = 'application/json';
 

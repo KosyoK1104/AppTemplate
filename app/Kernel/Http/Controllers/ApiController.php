@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Kernel\Http\Controllers;
 
-use App\Kernel\Http\Response\RestResponseFactory;
+use App\Kernel\Http\Response\ApiResponseFactory;
 use App\Shared\Helpers\ObjectToArrayTransformer;
 use App\Shared\Pagination\PaginatedCollection;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class RestController extends Controller
+abstract class ApiController extends Controller
 {
-    public readonly RestResponseFactory $responseFactory;
+    public readonly ApiResponseFactory $responseFactory;
 
     /** @noinspection MagicMethodsValidityInspection */
-    public function __setResponseFactory(RestResponseFactory $responseFactory) : void
+    public function __setResponseFactory(ApiResponseFactory $responseFactory) : void
     {
         $this->responseFactory = $responseFactory;
     }

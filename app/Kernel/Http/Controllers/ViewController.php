@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Kernel\Http\Controllers;
 
-use App\Kernel\Http\Response\HtmlResponseFactory;
+use App\Kernel\Http\Response\ViewResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Twig\Environment;
 
-abstract class HtmlController extends Controller
+abstract class ViewController extends Controller
 {
     private readonly Environment $twig;
-    private readonly HtmlResponseFactory $responseFactory;
+    private readonly ViewResponseFactory $responseFactory;
 
     /** @noinspection MagicMethodsValidityInspection */
     public function __setTwig(Environment $twig): void
@@ -20,7 +20,7 @@ abstract class HtmlController extends Controller
     }
 
     /** @noinspection MagicMethodsValidityInspection */
-    public function __setResponseFactory(HtmlResponseFactory $responseFactory): void
+    public function __setResponseFactory(ViewResponseFactory $responseFactory): void
     {
         $this->responseFactory = $responseFactory;
     }

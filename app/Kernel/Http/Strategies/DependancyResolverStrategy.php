@@ -16,7 +16,7 @@ use ReflectionException;
 use ReflectionMethod;
 use RuntimeException;
 
-final class MethodStrategy extends ApplicationStrategy
+final class DependancyResolverStrategy extends ApplicationStrategy
 {
 
     /**
@@ -26,17 +26,31 @@ final class MethodStrategy extends ApplicationStrategy
      */
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request) : ResponseInterface
     {
-        if (!empty($route->getVars())) {
-            foreach ($route->getVars() as $key => $value) {
-                $request = $request->withAttribute($key, $value);
-            }
-        }
-
         $controller = $route->getCallable($this->getContainer());
+        $request = $this->addAttributesToRequest($route, $request);
+        /**
+         * @var Controller $controller[0]
+         */
+        $controller[0]->__setRequest(new Request($request));
+        $response = $controller(...array_values($this->getDependancies($controller, $request)));
+        if (!$response instanceof ResponseInterface) {
+            throw new RuntimeException('Controller must return ResponseInterface');
+        }
+        return $response;
+    }
+
+    /**
+     * @throws ReflectionException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    private function getDependancies(callable $controller, ServerRequestInterface $request) : array
+    {
         assert($controller[0] instanceof Controller);
         $reflection = new ReflectionMethod($controller[0], $controller[1]);
 
         $dependencies = $reflection->getParameters();
+
         $parameters = [];
         foreach ($dependencies as $key => $dependency) {
             if ($dependency instanceof ServerRequestInterface) {
@@ -45,14 +59,17 @@ final class MethodStrategy extends ApplicationStrategy
             }
             $parameters[$key] = $this->getContainer()?->get($dependency->getType()?->getName());
         }
-        /**
-         * @var Controller $controller[0]
-         */
-        $controller[0]->__setRequest(new Request($request));
-        $response = $controller(...array_values($parameters));
-        if (!$response instanceof ResponseInterface) {
-            throw new RuntimeException('Controller must return ResponseInterface');
+        return $parameters;
+    }
+
+    private function addAttributesToRequest(Route $route, ServerRequestInterface $request) : ServerRequestInterface
+    {
+        if (!empty($route->getVars())) {
+            foreach ($route->getVars() as $key => $value) {
+                $request = $request->withAttribute($key, $value);
+            }
         }
-        return $response;
+
+        return $request;
     }
 }

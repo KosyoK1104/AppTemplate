@@ -35,8 +35,6 @@ final class ExceptionHandlerServiceProvider extends AbstractServiceProvider
             $prettyPageHandler = new PrettyPageHandler;
             $this->blacklist($prettyPageHandler);
             $whoops->pushHandler($prettyPageHandler);
-//            $whoops->register();
-
             return $whoops;
         });
         $container->addShared(ExceptionHandlerInterface::class, ExceptionHandler::class)

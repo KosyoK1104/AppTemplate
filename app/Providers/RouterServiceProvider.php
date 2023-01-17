@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Kernel\Http\Middlewares\DatabaseMiddleware;
-use App\Kernel\Http\Strategies\MethodStrategy;
+use App\Kernel\Http\Middlewares\ExceptionHandlerMiddleware;
+use App\Kernel\Http\Strategies\DependancyResolverStrategy;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Route\Router;
 
@@ -24,11 +25,24 @@ final class RouterServiceProvider extends AbstractServiceProvider
         $container->addShared(Router::class, function () use ($container) {
             $router = new Router();
             require ROOT_DIR . '/app/routes.php';
-            $strategy = new MethodStrategy();
+            $strategy = new DependancyResolverStrategy();
             $strategy->setContainer($container);
             $router->setStrategy($strategy);
-            $router->middleware($container->get(DatabaseMiddleware::class));
+            $router->lazyMiddlewares(
+                $this->middlewares()
+            );
             return $router;
         });
+    }
+
+    /**
+     * @return class-string[]
+     */
+    private function middlewares() : array
+    {
+        return [
+            DatabaseMiddleware::class,
+            ExceptionHandlerMiddleware::class,
+        ];
     }
 }

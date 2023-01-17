@@ -6,7 +6,7 @@ namespace App\Kernel\Http\Response;
 
 use Psr\Http\Message\ResponseInterface;
 
-final class HtmlResponseFactory extends ResponseFactory
+final class ViewResponseFactory extends ResponseFactory
 {
     private const HEADER_CONTENT_TYPE = 'text/html';
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\TestingFolder;
 
-use App\Kernel\Http\Controllers\HtmlController;
+use App\Kernel\Http\Controllers\ViewController;
 use Psr\Http\Message\ResponseInterface;
 
-final class IndexController extends HtmlController
+final class IndexController extends ViewController
 {
     public function index() : ResponseInterface
     {

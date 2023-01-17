@@ -49,11 +49,4 @@ abstract class ResponseFactory
             )
         ;
     }
-
-    private function createStream(string $data) : StreamInterface
-    {
-        $stream = $this->streamFactory->createStream($data);
-        $stream->rewind();
-        return $stream;
-    }
 }

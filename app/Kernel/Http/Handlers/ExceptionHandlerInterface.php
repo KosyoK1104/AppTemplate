@@ -9,5 +9,5 @@ use Throwable;
 
 interface ExceptionHandlerInterface
 {
-    public function handle(Throwable $e, ResponseInterface $response) : ResponseInterface;
+    public function handle(Throwable $e) : ResponseInterface;
 }
