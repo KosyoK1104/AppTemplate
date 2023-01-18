@@ -14,7 +14,6 @@ use App\Providers\HttpServiceProvider;
 use App\Providers\RouterServiceProvider;
 use App\Providers\TemplateServiceProvider;
 use App\Shared\Event\EventingServiceProvider;
-use App\Shared\Identification\IdentificationServiceProvider;
 use League\Container\Container;
 use Twig\Environment;
 
@@ -31,7 +30,6 @@ $container->addServiceProvider(new HttpServiceProvider());
 $container->addServiceProvider(new DatabaseServiceProvider());
 $container->addServiceProvider(new ExceptionHandlerServiceProvider());
 $container->addServiceProvider(new EventingServiceProvider());
-$container->addServiceProvider(new IdentificationServiceProvider());
 
 $container->inflector(ViewController::class)
     ->invokeMethods(
