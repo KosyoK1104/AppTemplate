@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\TestingFolder;
+namespace App\TestingDomain;
 
 use App\Kernel\Http\Controllers\ViewController;
 use Psr\Http\Message\ResponseInterface;

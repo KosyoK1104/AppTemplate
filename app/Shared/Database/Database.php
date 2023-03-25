@@ -50,21 +50,18 @@ final class Database
     public function commit() : void
     {
         $this->pdo->commit();
+        $this->disconnect();
     }
 
     public function rollback() : void
     {
         $this->pdo->rollback();
+        $this->disconnect();
     }
 
-    public function disconnect() : void
+    private function disconnect() : void
     {
         unset($this->pdo);
-    }
-
-    public function pdo() : PDO
-    {
-        return $this->pdo;
     }
 
     /**
