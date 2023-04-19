@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      APP_NAME: "APP_NAME"
 
     steps:
       - name: Checkout code
