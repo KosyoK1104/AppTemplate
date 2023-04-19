@@ -20,9 +20,7 @@ final class DatabaseServiceProvider extends AbstractServiceProvider
         $this->container->addShared(
             Database::class,
             function () {
-                $db = new Database(env('DB_NAME'), env('DB_HOST'), env('DB_USERNAME'), env('DB_PASSWORD'));
-                $db->beginTransaction();
-                return $db;
+                return new Database(env('DB_NAME', ''), env('DB_HOST', ''), env('DB_USERNAME', ''), env('DB_PASSWORD', ''));
             }
         );
     }

@@ -8,10 +8,10 @@ use App\Kernel\Http\Response\ViewResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Twig\Environment;
 
-abstract class ViewController extends Controller
+trait UsesViewController
 {
     private readonly Environment $twig;
-    private readonly ViewResponseFactory $responseFactory;
+    private readonly ViewResponseFactory $viewResponseFactory;
 
     /** @noinspection MagicMethodsValidityInspection */
     public function __setTwig(Environment $twig): void
@@ -20,9 +20,9 @@ abstract class ViewController extends Controller
     }
 
     /** @noinspection MagicMethodsValidityInspection */
-    public function __setResponseFactory(ViewResponseFactory $responseFactory): void
+    public function __setViewResponseFactory(ViewResponseFactory $viewResponseFactory): void
     {
-        $this->responseFactory = $responseFactory;
+        $this->viewResponseFactory = $viewResponseFactory;
     }
 
     public function render(string $template, array $data = []): ResponseInterface
@@ -30,7 +30,7 @@ abstract class ViewController extends Controller
         /** @noinspection PhpUnhandledExceptionInspection */
         $template = $this->twig->load($template);
 
-        return $this->responseFactory
+        return $this->viewResponseFactory
             ->success(
                 $template
                     ->render($data)

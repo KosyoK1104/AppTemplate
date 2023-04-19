@@ -6,6 +6,7 @@ namespace App\Kernel\Http\Handlers;
 
 use App\Configuration\Config;
 use App\Kernel\Exceptions\AppException;
+use App\Kernel\Exceptions\ProvidesResponseCode;
 use Laminas\Diactoros\ResponseFactory;
 use League\Route\Http\Exception as HttpException;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +36,8 @@ final class ExceptionHandler implements ExceptionHandlerInterface
             return $this->getWithHeader($e->getStatusCode(), $e->getMessage());
         }
         if ($e instanceof AppException) {
-            return $this->getWithHeader(400, $e->getMessage());
+            $code = $e instanceof ProvidesResponseCode ? $e->responseCode() : 400;
+            return $this->getWithHeader($code, $e->getMessage());
         }
         return $this->getWithHeader(500, 'Unexpected error!');
     }

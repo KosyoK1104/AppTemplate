@@ -1,18 +1,24 @@
-name: Docker Image CI
+name: Docker Compose Build and Test
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "master" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker compose up -d
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-version: 1.29.1
+
+      - name: Build and Test Docker Compose app
+        run: |
+          docker-compose build

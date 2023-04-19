@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
 final class ExceptionHandlerMiddleware implements MiddlewareInterface
 {
@@ -22,7 +23,7 @@ final class ExceptionHandlerMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         }
-        catch (\Throwable $e) {
+        catch (Throwable $e) {
             return $this->exceptionHandler->handle($e);
         }
     }

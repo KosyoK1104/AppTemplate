@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Kernel;
 
+use App\Kernel\Http\Handlers\ExceptionHandler;
+use App\Kernel\Http\Handlers\ExceptionHandlerInterface;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
+use Laminas\HttpHandlerRunner\Emitter\SapiStreamEmitter;
 use League\Route\Router;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -18,6 +21,7 @@ final class Kernel
 
     private readonly ServerRequestInterface $serverRequest;
     private readonly Router $router;
+    private readonly ExceptionHandlerInterface $exceptionHandler;
 
     /**
      * @throws NotFoundExceptionInterface
@@ -27,6 +31,7 @@ final class Kernel
     {
         $this->serverRequest = self::$container->get(ServerRequestInterface::class);
         $this->router = self::$container->get(Router::class);
+        $this->exceptionHandler = self::$container->get(ExceptionHandlerInterface::class);
     }
 
     /** @noinspection MagicMethodsValidityInspection */
@@ -42,16 +47,19 @@ final class Kernel
 
     public function run() : void
     {
+        try{
+            $response = $this->router->dispatch($this->serverRequest);
+        } catch (\Throwable $e){
+            $response = $this->exceptionHandler->handle($e);
+        }
+
         $this->emit(
-            $this->router
-                ->dispatch(
-                    $this->serverRequest
-                )
+            $response
         );
     }
 
     private function emit(ResponseInterface $response) : void
     {
-        (new SapiEmitter())->emit($response);
+        (new SapiStreamEmitter(1024))->emit($response);
     }
 }

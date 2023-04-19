@@ -18,17 +18,18 @@ final class Database
     private ?PDOStatement $stmt;
     private readonly string $dsn;
     private int $fetchMode = PDO::FETCH_ASSOC;
+    private array $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,];
 
     public function __construct(
-        private readonly string $database,
-        private readonly string $host,
+        string $database,
+        string $host,
         private readonly string $username,
-        private readonly string $password,
-        private readonly string $charset = 'utf8',
-        private readonly int $port = 3306,
-        private array $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,]
+        private readonly  string $password,
+        string $charset = 'utf8',
+        int $port = 3306,
+        array $options = []
     ) {
-        $this->dsn = 'mysql:host=' . $this->host . ';dbname=' . $this->database . ';port=' . $this->port . ';charset=' . $this->charset;
+        $this->dsn = 'mysql:host=' . $host . ';dbname=' . $database . ';port=' . $port . ';charset=' . $charset;
         if (!in_array(PDO::ERRMODE_EXCEPTION, $this->options, true)) {
             $this->options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
         }
@@ -57,6 +58,12 @@ final class Database
     {
         $this->pdo->rollback();
         $this->disconnect();
+    }
+
+    public function isInTransaction() : bool
+    {
+
+        return isset($this->pdo) && $this->pdo->inTransaction();
     }
 
     private function disconnect() : void
