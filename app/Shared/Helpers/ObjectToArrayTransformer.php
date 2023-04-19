@@ -10,16 +10,11 @@ final class ObjectToArrayTransformer
 {
     public static function transform(object|array $object) : mixed
     {
-        $result = [];
         if (is_iterable($object)) {
-            foreach ($object as $key => $value) {
-                if (!is_numeric($key)) {
-                    $key = self::camelToSnake($key);
-                }
-                $result[$key] = self::canTransformFurther($value) ? self::transform($value) : $value;
-            }
+            return self::iterate($object);
         }
         else {
+            $result = [];
             if ($object instanceof JsonSerializable) {
                 return $object->jsonSerialize();
             }
@@ -39,6 +34,22 @@ final class ObjectToArrayTransformer
             foreach ($vars as $var) {
                 $result[self::camelToSnake($var)] = self::canTransformFurther($object->$var) ? self::transform($object->$var) : $object->$var;
             }
+        }
+        return $result;
+    }
+
+    /**
+     * @param object|array $object
+     * @return array
+     */
+    protected static function iterate(object|array $object) : array
+    {
+        $result = [];
+        foreach ($object as $key => $value) {
+            if (!is_numeric($key)) {
+                $key = self::camelToSnake($key);
+            }
+            $result[$key] = self::canTransformFurther($value) ? self::transform($value) : $value;
         }
         return $result;
     }
