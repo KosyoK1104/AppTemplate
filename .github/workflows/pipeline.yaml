@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  APP_NAME: "App Name"
+  APP_NAME: "AppName"
 
 jobs:
   phpunit:
