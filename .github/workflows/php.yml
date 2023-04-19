@@ -1,10 +1,13 @@
 name: PHPUnit Test
 
+
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
+    branches:
+      - master
 
 jobs:
   build:
