@@ -1,0 +1,57 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  APP_NAME: "App Name"
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+
+      - name: Install Dependencies
+        run: composer install --no-progress
+
+      - name: Run PHPUnit Tests
+        run: ./vendor/bin/phpunit ./tests
+
+      # You can add additional steps to deploy or notify when the tests have finished successfully
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-version: 1.29.1
+
+      - name: Build and Test Docker Compose app
+        run: |
+          docker-compose build
+
+  # This job will run after the first two jobs have completed successfully
+  deploy:
+    needs: [docker-build, phpunit]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add deployment steps here
