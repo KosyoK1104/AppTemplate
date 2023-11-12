@@ -17,7 +17,8 @@
     "ext-pdo": "*",
     "symfony/console": "^6.2.3",
     "robmorgan/phinx": "^0.12.13",
-    "ramsey/uuid": "^4.7"
+    "ramsey/uuid": "^4.7",
+    "ext-sodium": "*"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",

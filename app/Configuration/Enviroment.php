@@ -14,4 +14,14 @@ enum Enviroment: string
     {
         return $this === self::LOCAL;
     }
+
+    public function isDev() : bool
+    {
+        return $this === self::DEV;
+    }
+
+    public function isProd() : bool
+    {
+        return $this === self::PROD;
+    }
 }

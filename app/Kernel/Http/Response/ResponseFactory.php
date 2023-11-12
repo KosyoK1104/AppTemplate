@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Kernel\Http\Response;
 
+use App\Kernel\Exceptions\ProvidesResponseCode;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -20,7 +21,7 @@ abstract class ResponseFactory
     public function unauthorized() : ResponseInterface
     {
         return $this->responseFactory
-            ->createResponse(403)
+            ->createResponse(ProvidesResponseCode::HTTP_UNAUTHORIZED)
             ->withBody(
                 $this->streamFactory
                     ->createStream('Unauthorized')
@@ -28,7 +29,7 @@ abstract class ResponseFactory
         ;
     }
 
-    public function error(string $error, int $code = 400) : ResponseInterface
+    public function error(string $error, int $code = ProvidesResponseCode::HTTP_BAD_REQUEST) : ResponseInterface
     {
         return $this->responseFactory
             ->createResponse($code)
@@ -39,7 +40,7 @@ abstract class ResponseFactory
         ;
     }
 
-    public function success(string $data, int $code = 200) : ResponseInterface
+    public function success(string $data, int $code = ProvidesResponseCode::HTTP_OK) : ResponseInterface
     {
         return $this->responseFactory
             ->createResponse($code)
