@@ -1,4 +1,16 @@
-# App Template
+# White Framework
+White Framework is a PHP-based starting framework developed to explore and deepen understanding of PHP Standards Recommendations (PSRs) and other foundational concepts in modern PHP development. It is intentionally minimal and designed to adhere to best practices, making it a great educational and practical tool for honing skills in creating scalable and maintainable PHP applications.
+
+## Goals of White Framework
+
+1 Learn and Apply PSRs: The framework serves as a hands-on project to implement various PSRs, including:
+- PSR-1: Basic coding standards.
+- PSR-4: Autoloading standards for organizing and loading classes.
+- PSR-7: HTTP message interfaces.
+- PSR-12: Extended coding style guidelines.
+- And more, depending on the project’s scope.
+2. Experimentation: Provides a safe environment to experiment with advanced PHP concepts like dependency injection, middleware, and design patterns.
+3. Foundation for Future Projects: Acts as a reusable starting point for new PHP applications, providing a clean structure and helpful tools.
 
 ## Used resources
 
